@@ -125,6 +125,13 @@ CREATE TABLE IF NOT EXISTS photo (
 );
 EOSQL
 
+# Ensure media folder exists with proper permissions
+if [ ! -d /opt/app/media ]; then
+    mkdir /opt/app/media
+fi
+chmod 777 /opt/app/media
+
+
 # Start the app using nohup so it survives startup
 export FLASK_APP=app.py
 export FLASK_ENV=production
