@@ -12,3 +12,4 @@ env/
 venv/
 ENV/
 .venv/
+.python-version
