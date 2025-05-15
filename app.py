@@ -109,25 +109,33 @@ def login():
 @app.route('/create-user', methods=['GET', 'POST'])
 def create_user():
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+        try:
+            username = request.form.get('username')
+            password = request.form.get('password')
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute("SELECT * FROM user WHERE username = %s", (username,))
-        user_exists = cursor.fetchone()
-        
-        if user_exists:
+            if not username or not password:
+                return render_template('create-user.html', error="Username and password required.")
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT * FROM user WHERE username = %s", (username,))
+            user_exists = cursor.fetchone()
+            
+            if user_exists:
+                conn.close()
+                return render_template('create-user.html', error="Username already exists.")
+            
+            cursor.execute("INSERT INTO user (username, password) VALUES (%s, %s)", (username, password))
+            conn.commit()
             conn.close()
-            return render_template('create-user.html', error="Username already exists.")
+
+            return render_template('index.html', message="User created successfully. Please log in.")
+
+        except Exception as e:
+            print("ERROR during user creation:", e)
+            return render_template('create-user.html', error="Internal server error. Please try again.")
         
-        cursor.execute("INSERT INTO user (username, password) VALUES (%s, %s)", (username, password))
-        conn.commit()
-        conn.close()
-
-        return render_template('index.html', message="User created successfully. Please log in.")
-
     return render_template('create-user.html')
 
 @app.route('/home', methods=['GET'])
