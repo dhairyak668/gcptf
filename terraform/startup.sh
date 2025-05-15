@@ -84,10 +84,14 @@ pip install --upgrade pip
 pip install -r requirements.txt
 
 # Export DB environment variables
-export DB_USER="${DB_USER}"
-export DB_PASSWORD="${DB_PASSWORD}"
-export DB_NAME="${DB_NAME}"
-export DB_HOST="${DB_HOST}"
+export DB_HOST=$(curl -s -H "Metadata-Flavor: Google" \
+    http://metadata.google.internal/computeMetadata/v1/instance/attributes/DB_HOST)
+export DB_USER=$(curl -s -H "Metadata-Flavor: Google" \
+    http://metadata.google.internal/computeMetadata/v1/instance/attributes/DB_USER)
+export DB_PASSWORD=$(curl -s -H "Metadata-Flavor: Google" \
+    http://metadata.google.internal/computeMetadata/v1/instance/attributes/DB_PASSWORD)
+export DB_NAME=$(curl -s -H "Metadata-Flavor: Google" \
+    http://metadata.google.internal/computeMetadata/v1/instance/attributes/DB_NAME)
 
 # Initialize DB schema
 mysql --protocol=TCP -h "$DB_HOST" -u"$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" << 'EOSQL'
