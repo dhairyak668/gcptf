@@ -8,7 +8,6 @@ apt-get install -y git python3-pip python3-venv
 
 # Clone your GitHub project
 git clone https://github.com/dhairyak668/gcptf.git
-chown -R dhairyakk125:dhairyakk125 /home/gcptf
 cd /home/gcptf
 
 # Set up Python virtual environment
