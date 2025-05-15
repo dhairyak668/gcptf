@@ -1,6 +1,6 @@
 variable "project_id" {
   type        = string
-  description = "final-terra"
+  description = "The project id"
 }
 
 variable "region" {
@@ -14,4 +14,10 @@ variable "region" {
 variable "zone" {
   type    = string
   default = "us-central1-a"
+}
+
+variable "db_password" {
+  type      = string
+  sensitive = true
+  description = "Password for the Cloud SQL user and Flask app"
 }

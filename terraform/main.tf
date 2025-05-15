@@ -62,5 +62,57 @@ resource "google_compute_instance" "flask_vm" {
 
   metadata_startup_script = file("startup.sh")
 
-  tags = ["http-server", "https-server", "flask-server"]
+  tags = ["http-server", "https-server", "flask-server","ssh-server"]
+
+  service_account {
+    email  = google_service_account.gallery_sa.email
+    scopes = ["cloud-platform"]
+  }
+
+  metadata = {
+    DB_USER     = "galleryuser"
+    DB_PASSWORD = var.db_password
+    DB_NAME     = "gallerydb"
+    DB_HOST     = google_sql_database_instance.gallery_db_instance.public_ip_address
+  }
+}
+
+resource "google_sql_database_instance" "gallery_db_instance" {
+  name             = "gallery-db"
+  database_version = "MYSQL_8_0"
+  region           = var.region
+
+  settings {
+    tier = "db-f1-micro"
+
+    ip_configuration {
+      ipv4_enabled    = true
+      authorized_networks {
+        name  = "allow-all"
+        value = "0.0.0.0/0"
+      }
+    }
+  }
+}
+
+resource "google_sql_database" "gallery_database" {
+  name     = "gallerydb"
+  instance = google_sql_database_instance.gallery_db_instance.name
+}
+
+resource "google_sql_user" "gallery_user" {
+  name     = "galleryuser"
+  instance = google_sql_database_instance.gallery_db_instance.name
+  password = var.db_password
+}
+
+resource "google_service_account" "gallery_sa" {
+  account_id   = "gallery-service-account"
+  display_name = "Gallery Service Account"
+}
+
+resource "google_project_iam_member" "sql_client_binding" {
+  project = var.project_id
+  role   = "roles/cloudsql.client"
+  member = "serviceAccount:${google_service_account.gallery_sa.email}"
 }
