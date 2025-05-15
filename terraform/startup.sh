@@ -90,7 +90,7 @@ export DB_NAME="${DB_NAME}"
 export DB_HOST="${DB_HOST}"
 
 # Initialize DB schema
-mysql -h "$DB_HOST" -u"$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" << 'EOSQL'
+mysql --protocol=TCP -h "$DB_HOST" -u"$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" << 'EOSQL'
 CREATE TABLE IF NOT EXISTS user (
   id INT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(255) UNIQUE NOT NULL,
