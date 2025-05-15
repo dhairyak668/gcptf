@@ -1,10 +1,17 @@
 variable "project_id" {
   type        = string
-  description = "steady-copilot-459615-f4"
+  description = "final-terra"
 }
 
 variable "region" {
-  type        = string
-  default     = "us-central1"
-  description = "us-central1"
+  type = string
+  default = "us-central1"
+  validation {
+    condition     = contains(["us-central1", "us-east1"], var.region)
+    error_message = "Region must be us-central1 or us-east1."
+  }
+}
+variable "zone" {
+  type    = string
+  default = "us-central1-a"
 }
