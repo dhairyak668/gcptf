@@ -69,7 +69,14 @@ mkdir -p /opt/app
 cd /opt/app
 
 # Clone the Flask app
-git clone https://github.com/dhairyak668/gcptf.git .
+if [ -d .git ]; then
+  echo "Pulling latest changes from GitHub..."
+  git pull origin main
+else
+  echo "Cloning repo for the first time..."
+  git clone https://github.com/dhairyak668/gcptf.git .
+fi
+
 if [ ! -f requirements.txt ]; then
   echo " ERROR: Failed to clone repo or requirements.txt missing."
   exit 1
@@ -92,6 +99,12 @@ export DB_PASSWORD=$(curl -s -H "Metadata-Flavor: Google" \
     http://metadata.google.internal/computeMetadata/v1/instance/attributes/DB_PASSWORD)
 export DB_NAME=$(curl -s -H "Metadata-Flavor: Google" \
     http://metadata.google.internal/computeMetadata/v1/instance/attributes/DB_NAME)
+
+echo "DB_HOST=$DB_HOST"
+echo "DB_USER=$DB_USER"
+echo "DB_PASSWORD=$DB_PASSWORD"
+echo "DB_NAME=$DB_NAME"
+
 
 # Initialize DB schema
 mysql --protocol=TCP -h "$DB_HOST" -u"$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" << 'EOSQL'
@@ -116,3 +129,4 @@ EOSQL
 export FLASK_APP=app.py
 export FLASK_ENV=production
 nohup flask run --host=0.0.0.0 --port=8080 > flask.log 2>&1 &
+deactivate
