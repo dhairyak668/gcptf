@@ -62,7 +62,7 @@ resource "google_compute_instance" "flask_vm" {
 
   metadata_startup_script = file("startup.sh")
 
-  tags = ["http-server", "https-server", "flask-server","ssh-server"]
+  tags = ["http-server", "https-server", "flask-server","ssh-server","redeploy-${timestamp()}"]
 
   service_account {
     email  = google_service_account.gallery_sa.email
