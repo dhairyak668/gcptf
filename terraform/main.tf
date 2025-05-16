@@ -43,6 +43,20 @@ resource "google_compute_firewall" "allow-flask-8080" {
   target_tags   = ["flask-server"]
 }
 
+resource "google_compute_firewall" "allow-ssh" {
+  name    = "allow-ssh"
+  network = google_compute_network.custom_vpc.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  direction     = "INGRESS"
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["ssh-server"]
+}
+
 resource "google_compute_instance" "flask_vm" {
   name         = "flask-vm"
   machine_type = "e2-standard-2"
